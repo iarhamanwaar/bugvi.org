@@ -18,8 +18,9 @@ The site is fully bilingual in **English** and **Urdu**.
 ## Tech Stack
 
 - Static HTML/CSS/JS (migrated from Webflow)
-- Hosted on [Cloudflare Pages](https://pages.cloudflare.com/)
-- Auto-deploys from the `main` branch
+- [Cloudflare Pages](https://pages.cloudflare.com/) for hosting (auto-deploys from GitHub)
+- [Cloudflare Workers](https://workers.cloudflare.com/) + [D1](https://developers.cloudflare.com/d1/) for contact form API
+- Client-side search powered by a pre-built JSON index
 
 ## Local Development
 
@@ -34,26 +35,55 @@ python3 -m http.server 8080
 # Open http://localhost:8080
 ```
 
+### Worker Development
+
+The contact form API runs as a Cloudflare Worker in the `worker/` directory:
+
+```bash
+cd worker
+
+# Run locally
+npx wrangler dev
+
+# Deploy
+CLOUDFLARE_ACCOUNT_ID=f89a20cb29dcfc73dcf4816d589252da npx wrangler deploy
+```
+
 ## Project Structure
 
 ```
 ├── index.html              # Homepage
+├── search.html             # Client-side search page
+├── search-index.json       # Pre-built search index
 ├── urdu/                   # Urdu language pages
-├── images/                 # Gallery image pages
-├── books/                  # Book detail pages
+├── images/                 # Gallery image pages (311)
+├── books/                  # Book detail pages (18)
 ├── news/                   # News articles (EN)
 ├── news-urdu/              # News articles (UR)
 ├── assets/
 │   ├── css/                # Stylesheets
 │   ├── js/                 # JavaScript
 │   └── gallery/            # Gallery images
+├── worker/
+│   ├── index.js            # Cloudflare Worker (contact + newsletter API)
+│   ├── wrangler.jsonc      # Worker config
+│   └── schema.sql          # D1 database schema
 ├── wrangler.jsonc          # Cloudflare Pages config
 └── CLAUDE.md               # Development guide
 ```
 
+## Features
+
+- **413 pages** across English and Urdu
+- **Contact form** — submissions stored in Cloudflare D1 database
+- **Full-text search** — client-side search across all content pages
+- **Newsletter API** — endpoint ready for future subscription form
+- **Gallery** — 300+ photographs with individual detail pages
+
 ## Deployment
 
-Pushes to `main` automatically deploy to [bugvi.org](https://bugvi.org) via Cloudflare Pages.
+- **Static site:** Pushes to `main` automatically deploy to [bugvi.org](https://bugvi.org) via Cloudflare Pages
+- **API Worker:** Deploy manually with `npx wrangler deploy` from `worker/`
 
 ## License
 
