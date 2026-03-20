@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bugvi-api",
+  "main": "index.js",
+  "compatibility_date": "2025-09-27",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bugvi-db",
+      "database_id": "83634646-309d-4a9c-917f-cb6747bff61f"
+    }
+  ],
+  "vars": {
+    "CONTACT_EMAIL": "bugvi4all@hotmail.com"
+  }
+}
