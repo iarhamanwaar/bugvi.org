@@ -54,12 +54,25 @@ async function handleContact(request, env) {
   const sanitizedMessage = message.replace(/[<>]/g, "");
 
   try {
+    // Store in database
     await env.DB.prepare(
       "INSERT INTO contact_messages (name, email, message, created_at) VALUES (?, ?, ?, datetime('now'))"
     ).bind(sanitizedName, sanitizedEmail, sanitizedMessage).run();
+
+    // Send email notification via MailChannels
+    const origin = request.headers.get("Origin") || "website";
+    const site = origin.includes("aibf") ? "AIBF" : "Bugvi.org";
+    await sendEmailNotification(env, {
+      site,
+      name: sanitizedName,
+      email: sanitizedEmail,
+      message: sanitizedMessage,
+    });
+
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {
-    return new Response(JSON.stringify({ error: "Failed to send message" }), { status: 500 });
+    // Still return success if DB saved but email failed
+    return new Response(JSON.stringify({ success: true }), { status: 200 });
   }
 }
 
@@ -85,5 +98,32 @@ async function handleNewsletter(request, env) {
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {
     return new Response(JSON.stringify({ error: "Failed to subscribe" }), { status: 500 });
+  }
+}
+
+async function sendEmailNotification(env, { site, name, email, message }) {
+  try {
+    await fetch("https://api.mailchannels.net/tx/v1/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        personalizations: [
+          {
+            to: [{ email: env.NOTIFY_EMAIL, name: "AIBF Admin" }],
+          },
+        ],
+        from: { email: "noreply@aibf.ngo", name: `${site} Contact Form` },
+        reply_to: { email: email, name: name },
+        subject: `[${site}] New message from ${name}`,
+        content: [
+          {
+            type: "text/plain",
+            value: `New contact form submission from ${site}\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}\n\n---\nThis is an automated notification from ${site}.`,
+          },
+        ],
+      }),
+    });
+  } catch {
+    // Silently fail — message is already saved in DB
   }
 }

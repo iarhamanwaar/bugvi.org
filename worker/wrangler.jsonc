@@ -11,6 +11,7 @@
     }
   ],
   "vars": {
-    "CONTACT_EMAIL": "bugvi4all@hotmail.com"
+    "CONTACT_EMAIL": "bugvi4all@hotmail.com",
+    "NOTIFY_EMAIL": "arhamanwaar@gmail.com"
   }
 }
