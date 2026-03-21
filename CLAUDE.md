@@ -75,6 +75,9 @@ Static website for the Bugvi Family documenting the history, culture, and herita
 - On success: hides form, shows `.w-form-done` success message
 - On error: shows `.w-form-fail` error message
 - Submissions stored in D1 database `bugvi-db` → `contact_messages` table
+- Email notification sent to arhamanwaar@gmail.com via MailChannels
+- CORS allows both `bugvi.org` and `aibf.ngo` origins
+- The same Worker is shared with the aibf.ngo website
 
 ### Search
 - Client-side search at `/search.html`
@@ -121,6 +124,12 @@ These are still loaded from external CDNs:
   CLOUDFLARE_ACCOUNT_ID=f89a20cb29dcfc73dcf4816d589252da npx wrangler deploy
   ```
 - Worker URL: `https://bugvi-api.arhamanwaar.workers.dev`
+- CORS: allows `bugvi.org` and `aibf.ngo` origins
+- Email notifications: sends to arhamanwaar@gmail.com via MailChannels on form submission
+
+### Related Projects
+- **aibf.ngo** — Al-Iftikhar Bugvia Foundation website (Next.js, at ~/projects/aibf.ngo)
+- Both sites share the same Cloudflare Worker (`bugvi-api`) for contact forms
 
 ### D1 Database
 - Database: `bugvi-db` (ID: `83634646-309d-4a9c-917f-cb6747bff61f`)
