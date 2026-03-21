@@ -3,28 +3,34 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === "OPTIONS") {
-      return corsResponse(new Response(null, { status: 204 }));
+      return corsResponse(new Response(null, { status: 204 }), request);
     }
 
     if (request.method !== "POST") {
-      return corsResponse(new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 }));
+      return corsResponse(new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 }), request);
     }
 
     if (url.pathname === "/api/contact") {
-      return corsResponse(await handleContact(request, env));
+      return corsResponse(await handleContact(request, env), request);
     }
 
     if (url.pathname === "/api/newsletter") {
-      return corsResponse(await handleNewsletter(request, env));
+      return corsResponse(await handleNewsletter(request, env), request);
     }
 
-    return corsResponse(new Response(JSON.stringify({ error: "Not found" }), { status: 404 }));
+    return corsResponse(new Response(JSON.stringify({ error: "Not found" }), { status: 404 }), request);
   },
 };
 
-function corsResponse(response) {
+function corsResponse(response, request) {
   const headers = new Headers(response.headers);
-  headers.set("Access-Control-Allow-Origin", "https://bugvi.org");
+  const origin = request?.headers?.get("Origin") || "";
+  const allowed = ["https://bugvi.org", "https://aibf.ngo"];
+  if (allowed.includes(origin)) {
+    headers.set("Access-Control-Allow-Origin", origin);
+  } else {
+    headers.set("Access-Control-Allow-Origin", "https://bugvi.org");
+  }
   headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
   headers.set("Access-Control-Allow-Headers", "Content-Type");
   return new Response(response.body, { status: response.status, headers });
